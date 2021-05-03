@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const User = require("../models/userModels")
 const FalseProfile = require("../models/fakeModels")
+const auth = require("../middleware/authentication")
 
 
 // LOGIN METOD + KRYPTERING
@@ -12,12 +13,7 @@ module.exports = {
       const {email, password} = req.body
       const user = await User.UserDef(email)
       const passwordresult = bcrypt.compareSync(password, user.password)
-
-      if (passwordresult) {
-        const token = jwt.sign(password, process.env.SECRET)
-        res.json({token})}
-
-      else {throw new Unauthorized()}
+      res.json(auth(password, passwordresult))
     }
       catch (error) {next(error)}},
 
